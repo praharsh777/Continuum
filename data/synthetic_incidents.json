@@ -1,0 +1,1070 @@
+[
+  {
+    "incident_id": "INC-1046",
+    "service_name": "inventory-manager",
+    "severity": "SEV2",
+    "status": "OPEN",
+    "created_at": "2026-09-21T13:45:00+00:00",
+    "symptoms": "Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 46)",
+    "log_excerpt": "[2026-09-21T13:45:00+00:00] [inventory-manager] RejectedExecutionException: Task java.util.concurrent.FutureTask@381af rejected from ThreadPoolExecutor [Running, pool size 64, active threads 64, queued tasks 500]",
+    "target_fix": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1043",
+    "service_name": "payment-gateway",
+    "severity": "SEV1",
+    "status": "OPEN",
+    "created_at": "2026-09-21T16:06:00+00:00",
+    "symptoms": "Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 43)",
+    "log_excerpt": "[2026-09-21T16:06:00+00:00] [payment-gateway] SSLHandshakeException: PKIX path validation failed: java.security.cert.CertificateExpiredException: NotAfter: Sun Sep 21 00:00:00 UTC 2026\nRemote peer terminated handshake",
+    "target_fix": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1047",
+    "service_name": "recommendation-engine",
+    "severity": "SEV3",
+    "status": "OPEN",
+    "created_at": "2026-09-21T20:58:00+00:00",
+    "symptoms": "Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 47)",
+    "log_excerpt": "[2026-09-21T20:58:00+00:00] [recommendation-engine] HTTP 429 Too Many Requests from VectorDB endpoint /v1/embeddings/query\nRetry-After: 60s header received. Dropping batch request.",
+    "target_fix": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1044",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "OPEN",
+    "created_at": "2026-09-21T23:19:00+00:00",
+    "symptoms": "Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 44)",
+    "log_excerpt": "[2026-09-21T23:19:00+00:00] [auth-service] InvalidTokenException: Key with kid 'auth-key-2026-b' not found in JWKS key set\nFailed to verify signature for inbound Bearer authorization token",
+    "target_fix": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1045",
+    "service_name": "user-profile-svc",
+    "severity": "SEV3",
+    "status": "OPEN",
+    "created_at": "2026-09-22T06:32:00+00:00",
+    "symptoms": "User preferences failing to load; displaying fallback default values for all users. (Incident variation 45)",
+    "log_excerpt": "[2026-09-22T06:32:00+00:00] [user-profile-svc] CircuitBreaker 'UserProfileDB' is OPEN and does not permit further calls (failure rate 78.4% >= threshold 50%)\nFallback method getStaticProfile invoked",
+    "target_fix": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1039",
+    "service_name": "notification-worker",
+    "severity": "SEV3",
+    "status": "OPEN",
+    "created_at": "2026-09-22T12:14:00+00:00",
+    "symptoms": "Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 39)",
+    "log_excerpt": "[2026-09-22T12:14:00+00:00] [notification-worker] CommitFailedException: Commit cannot be completed since the group has already rebalanced\nConsumer poll interval exceeded max.poll.interval.ms (300000ms)",
+    "target_fix": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1040",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "OPEN",
+    "created_at": "2026-09-22T19:27:00+00:00",
+    "symptoms": "Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 40)",
+    "log_excerpt": "[2026-09-22T19:27:00+00:00] [ledger-service] java.lang.OutOfMemoryError: Java heap space\nDumping heap to java_pid1.hprof ...\nkubelet: Container ledger-service was killed by OOMKilled",
+    "target_fix": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1041",
+    "service_name": "api-edge-router",
+    "severity": "SEV1",
+    "status": "OPEN",
+    "created_at": "2026-09-23T02:40:00+00:00",
+    "symptoms": "Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 41)",
+    "log_excerpt": "[2026-09-23T02:40:00+00:00] [api-edge-router] nginx: [error] 14#14: *92102 payment-gateway.internal could not be resolved (3: Host not found)\nresolver 10.96.0.10:53 query timed out for cluster domain",
+    "target_fix": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1038",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-23T05:01:00+00:00",
+    "symptoms": "Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 38)",
+    "log_excerpt": "[2026-09-23T05:01:00+00:00] [search-indexer] OOM command not allowed when used memory > 'maxmemory' (policy: volatile-lru)\nCache miss rate climbed from 4% to 92% across all search nodes",
+    "target_fix": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+    "resolution": {
+      "incident_id": "INC-1038",
+      "fix_applied": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-23T05:47:00+00:00",
+      "time_to_resolve_seconds": 2760
+    },
+    "postmortem": {
+      "incident_id": "INC-1038",
+      "narrative_summary": "Incident INC-1038 in search-indexer. Symptom: Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 38). Root cause: Key TTLs missing on product category search facets, triggering bulk LRU key evictions.. Fix applied: Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1038",
+      "retained_at": "2026-09-23T05:47:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1042",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "OPEN",
+    "created_at": "2026-09-23T09:53:00+00:00",
+    "symptoms": "Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 42)",
+    "log_excerpt": "[2026-09-23T09:53:00+00:00] [search-indexer] cluster_block_exception: index [catalog_v3] blocked by: [TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark 95%]",
+    "target_fix": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1036",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-23T15:35:00+00:00",
+    "symptoms": "All ledger write operations blocked; transactions failing with query lock timeout. (Incident variation 36)",
+    "log_excerpt": "[2026-09-23T15:35:00+00:00] [ledger-service] Lock wait timeout exceeded; try restarting transaction: ALTER TABLE accounts ADD COLUMN risk_tier VARCHAR(16) NOT NULL DEFAULT 'STANDARD'\nTable accounts locked exclusively by migration pid 4812",
+    "target_fix": "Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.",
+    "resolution": {
+      "incident_id": "INC-1036",
+      "fix_applied": "Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-23T16:15:00+00:00",
+      "time_to_resolve_seconds": 2400
+    },
+    "postmortem": {
+      "incident_id": "INC-1036",
+      "narrative_summary": "Incident INC-1036 in ledger-service. Symptom: All ledger write operations blocked; transactions failing with query lock timeout. (Incident variation 36). Root cause: Migration script ran ALTER TABLE with default value on large table without pt-online-schema-change.. Fix applied: Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1036",
+      "retained_at": "2026-09-23T16:15:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1033",
+    "service_name": "user-profile-svc",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-23T18:56:00+00:00",
+    "symptoms": "User preferences failing to load; displaying fallback default values for all users. (Incident variation 33)",
+    "log_excerpt": "[2026-09-23T18:56:00+00:00] [user-profile-svc] CircuitBreaker 'UserProfileDB' is OPEN and does not permit further calls (failure rate 78.4% >= threshold 50%)\nFallback method getStaticProfile invoked",
+    "target_fix": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+    "resolution": {
+      "incident_id": "INC-1033",
+      "fix_applied": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-23T19:27:00+00:00",
+      "time_to_resolve_seconds": 1860
+    },
+    "postmortem": {
+      "incident_id": "INC-1033",
+      "narrative_summary": "Incident INC-1033 in user-profile-svc. Symptom: User preferences failing to load; displaying fallback default values for all users. (Incident variation 33). Root cause: Database transient network blip tripped circuit breaker; reset timeout was misconfigured to 24 hours.. Fix applied: Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1033",
+      "retained_at": "2026-09-23T19:27:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1037",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-23T22:48:00+00:00",
+    "symptoms": "HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 37)",
+    "log_excerpt": "[2026-09-23T22:48:00+00:00] [auth-service] TimeoutError: QueuePool limit of size 20 overflow 10 reached, connection timed out after 30.00 seconds\nSQLAlchemy.exc.TimeoutError: could not obtain connection from pool",
+    "target_fix": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+    "resolution": {
+      "incident_id": "INC-1037",
+      "fix_applied": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-23T23:31:00+00:00",
+      "time_to_resolve_seconds": 2580
+    },
+    "postmortem": {
+      "incident_id": "INC-1037",
+      "narrative_summary": "Incident INC-1037 in auth-service. Symptom: HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 37). Root cause: Database connection pool exhausted due to unclosed sessions in OAuth refresh handler.. Fix applied: Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1037",
+      "retained_at": "2026-09-23T23:31:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1034",
+    "service_name": "inventory-manager",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-24T01:09:00+00:00",
+    "symptoms": "Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 34)",
+    "log_excerpt": "[2026-09-24T01:09:00+00:00] [inventory-manager] RejectedExecutionException: Task java.util.concurrent.FutureTask@381af rejected from ThreadPoolExecutor [Running, pool size 64, active threads 64, queued tasks 500]",
+    "target_fix": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+    "resolution": {
+      "incident_id": "INC-1034",
+      "fix_applied": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-24T01:43:00+00:00",
+      "time_to_resolve_seconds": 2040
+    },
+    "postmortem": {
+      "incident_id": "INC-1034",
+      "narrative_summary": "Incident INC-1034 in inventory-manager. Symptom: Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 34). Root cause: Synchronous HTTP call to legacy ERP supplier API had no read timeout configured, holding worker threads indefinitely.. Fix applied: Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1034",
+      "retained_at": "2026-09-24T01:43:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1035",
+    "service_name": "recommendation-engine",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-24T08:22:00+00:00",
+    "symptoms": "Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 35)",
+    "log_excerpt": "[2026-09-24T08:22:00+00:00] [recommendation-engine] HTTP 429 Too Many Requests from VectorDB endpoint /v1/embeddings/query\nRetry-After: 60s header received. Dropping batch request.",
+    "target_fix": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+    "resolution": {
+      "incident_id": "INC-1035",
+      "fix_applied": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-24T08:59:00+00:00",
+      "time_to_resolve_seconds": 2220
+    },
+    "postmortem": {
+      "incident_id": "INC-1035",
+      "narrative_summary": "Incident INC-1035 in recommendation-engine. Symptom: Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 35). Root cause: Batch recommendation recalculation job burst exceeded external embedding provider rate limit.. Fix applied: Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1035",
+      "retained_at": "2026-09-24T08:59:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1032",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-24T11:43:00+00:00",
+    "symptoms": "Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 32)",
+    "log_excerpt": "[2026-09-24T11:43:00+00:00] [auth-service] InvalidTokenException: Key with kid 'auth-key-2026-b' not found in JWKS key set\nFailed to verify signature for inbound Bearer authorization token",
+    "target_fix": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+    "resolution": {
+      "incident_id": "INC-1032",
+      "fix_applied": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-24T12:11:00+00:00",
+      "time_to_resolve_seconds": 1680
+    },
+    "postmortem": {
+      "incident_id": "INC-1032",
+      "narrative_summary": "Incident INC-1032 in auth-service. Symptom: Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 32). Root cause: Canary deployment published new key ID before JWKS endpoint cache was purged across edge nodes.. Fix applied: Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1032",
+      "retained_at": "2026-09-24T12:11:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1029",
+    "service_name": "api-edge-router",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-24T14:04:00+00:00",
+    "symptoms": "Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 29)",
+    "log_excerpt": "[2026-09-24T14:04:00+00:00] [api-edge-router] nginx: [error] 14#14: *92102 payment-gateway.internal could not be resolved (3: Host not found)\nresolver 10.96.0.10:53 query timed out for cluster domain",
+    "target_fix": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+    "resolution": {
+      "incident_id": "INC-1029",
+      "fix_applied": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-24T15:08:00+00:00",
+      "time_to_resolve_seconds": 3840
+    },
+    "postmortem": {
+      "incident_id": "INC-1029",
+      "narrative_summary": "Incident INC-1029 in api-edge-router. Symptom: Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 29). Root cause: CoreDNS pods overwhelmed by single-concurrency UDP connection limits during traffic surge.. Fix applied: Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1029",
+      "retained_at": "2026-09-24T15:08:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1030",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-24T21:17:00+00:00",
+    "symptoms": "Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 30)",
+    "log_excerpt": "[2026-09-24T21:17:00+00:00] [search-indexer] cluster_block_exception: index [catalog_v3] blocked by: [TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark 95%]",
+    "target_fix": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+    "resolution": {
+      "incident_id": "INC-1030",
+      "fix_applied": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-24T22:24:00+00:00",
+      "time_to_resolve_seconds": 4020
+    },
+    "postmortem": {
+      "incident_id": "INC-1030",
+      "narrative_summary": "Incident INC-1030 in search-indexer. Symptom: Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 30). Root cause: Debug level audit logs consuming root partition without logrotate compression.. Fix applied: Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1030",
+      "retained_at": "2026-09-24T22:24:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1031",
+    "service_name": "payment-gateway",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-25T04:30:00+00:00",
+    "symptoms": "Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 31)",
+    "log_excerpt": "[2026-09-25T04:30:00+00:00] [payment-gateway] SSLHandshakeException: PKIX path validation failed: java.security.cert.CertificateExpiredException: NotAfter: Sun Sep 21 00:00:00 UTC 2026\nRemote peer terminated handshake",
+    "target_fix": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+    "resolution": {
+      "incident_id": "INC-1031",
+      "fix_applied": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-25T04:55:00+00:00",
+      "time_to_resolve_seconds": 1500
+    },
+    "postmortem": {
+      "incident_id": "INC-1031",
+      "narrative_summary": "Incident INC-1031 in payment-gateway. Symptom: Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 31). Root cause: Automated cert-manager renewal webhook secret expired without triggering alert.. Fix applied: Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1031",
+      "retained_at": "2026-09-25T04:55:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1028",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-25T07:51:00+00:00",
+    "symptoms": "Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 28)",
+    "log_excerpt": "[2026-09-25T07:51:00+00:00] [ledger-service] java.lang.OutOfMemoryError: Java heap space\nDumping heap to java_pid1.hprof ...\nkubelet: Container ledger-service was killed by OOMKilled",
+    "target_fix": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+    "resolution": {
+      "incident_id": "INC-1028",
+      "fix_applied": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-25T08:52:00+00:00",
+      "time_to_resolve_seconds": 3660
+    },
+    "postmortem": {
+      "incident_id": "INC-1028",
+      "narrative_summary": "Incident INC-1028 in ledger-service. Symptom: Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 28). Root cause: Unbounded query loading 500,000 monthly transaction lines into memory for end-of-day audit.. Fix applied: Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1028",
+      "retained_at": "2026-09-25T08:52:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1025",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-25T10:12:00+00:00",
+    "symptoms": "HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 25)",
+    "log_excerpt": "[2026-09-25T10:12:00+00:00] [auth-service] TimeoutError: QueuePool limit of size 20 overflow 10 reached, connection timed out after 30.00 seconds\nSQLAlchemy.exc.TimeoutError: could not obtain connection from pool",
+    "target_fix": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+    "resolution": {
+      "incident_id": "INC-1025",
+      "fix_applied": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-25T11:04:00+00:00",
+      "time_to_resolve_seconds": 3120
+    },
+    "postmortem": {
+      "incident_id": "INC-1025",
+      "narrative_summary": "Incident INC-1025 in auth-service. Symptom: HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 25). Root cause: Database connection pool exhausted due to unclosed sessions in OAuth refresh handler.. Fix applied: Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1025",
+      "retained_at": "2026-09-25T11:04:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1022",
+    "service_name": "inventory-manager",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-25T13:33:00+00:00",
+    "symptoms": "Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 22)",
+    "log_excerpt": "[2026-09-25T13:33:00+00:00] [inventory-manager] RejectedExecutionException: Task java.util.concurrent.FutureTask@381af rejected from ThreadPoolExecutor [Running, pool size 64, active threads 64, queued tasks 500]",
+    "target_fix": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+    "resolution": {
+      "incident_id": "INC-1022",
+      "fix_applied": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-25T14:16:00+00:00",
+      "time_to_resolve_seconds": 2580
+    },
+    "postmortem": {
+      "incident_id": "INC-1022",
+      "narrative_summary": "Incident INC-1022 in inventory-manager. Symptom: Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 22). Root cause: Synchronous HTTP call to legacy ERP supplier API had no read timeout configured, holding worker threads indefinitely.. Fix applied: Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1022",
+      "retained_at": "2026-09-25T14:16:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1026",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-25T17:25:00+00:00",
+    "symptoms": "Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 26)",
+    "log_excerpt": "[2026-09-25T17:25:00+00:00] [search-indexer] OOM command not allowed when used memory > 'maxmemory' (policy: volatile-lru)\nCache miss rate climbed from 4% to 92% across all search nodes",
+    "target_fix": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+    "resolution": {
+      "incident_id": "INC-1026",
+      "fix_applied": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-25T18:20:00+00:00",
+      "time_to_resolve_seconds": 3300
+    },
+    "postmortem": {
+      "incident_id": "INC-1026",
+      "narrative_summary": "Incident INC-1026 in search-indexer. Symptom: Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 26). Root cause: Key TTLs missing on product category search facets, triggering bulk LRU key evictions.. Fix applied: Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1026",
+      "retained_at": "2026-09-25T18:20:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1023",
+    "service_name": "recommendation-engine",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-25T20:46:00+00:00",
+    "symptoms": "Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 23)",
+    "log_excerpt": "[2026-09-25T20:46:00+00:00] [recommendation-engine] HTTP 429 Too Many Requests from VectorDB endpoint /v1/embeddings/query\nRetry-After: 60s header received. Dropping batch request.",
+    "target_fix": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+    "resolution": {
+      "incident_id": "INC-1023",
+      "fix_applied": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-25T21:32:00+00:00",
+      "time_to_resolve_seconds": 2760
+    },
+    "postmortem": {
+      "incident_id": "INC-1023",
+      "narrative_summary": "Incident INC-1023 in recommendation-engine. Symptom: Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 23). Root cause: Batch recommendation recalculation job burst exceeded external embedding provider rate limit.. Fix applied: Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1023",
+      "retained_at": "2026-09-25T21:32:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1027",
+    "service_name": "notification-worker",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-26T00:38:00+00:00",
+    "symptoms": "Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 27)",
+    "log_excerpt": "[2026-09-26T00:38:00+00:00] [notification-worker] CommitFailedException: Commit cannot be completed since the group has already rebalanced\nConsumer poll interval exceeded max.poll.interval.ms (300000ms)",
+    "target_fix": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+    "resolution": {
+      "incident_id": "INC-1027",
+      "fix_applied": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-26T01:36:00+00:00",
+      "time_to_resolve_seconds": 3480
+    },
+    "postmortem": {
+      "incident_id": "INC-1027",
+      "narrative_summary": "Incident INC-1027 in notification-worker. Symptom: Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 27). Root cause: Downstream SMTP provider throttled connections, causing message processing loop to block beyond poll interval.. Fix applied: Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1027",
+      "retained_at": "2026-09-26T01:36:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1024",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-26T03:59:00+00:00",
+    "symptoms": "All ledger write operations blocked; transactions failing with query lock timeout. (Incident variation 24)",
+    "log_excerpt": "[2026-09-26T03:59:00+00:00] [ledger-service] Lock wait timeout exceeded; try restarting transaction: ALTER TABLE accounts ADD COLUMN risk_tier VARCHAR(16) NOT NULL DEFAULT 'STANDARD'\nTable accounts locked exclusively by migration pid 4812",
+    "target_fix": "Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.",
+    "resolution": {
+      "incident_id": "INC-1024",
+      "fix_applied": "Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-26T04:48:00+00:00",
+      "time_to_resolve_seconds": 2940
+    },
+    "postmortem": {
+      "incident_id": "INC-1024",
+      "narrative_summary": "Incident INC-1024 in ledger-service. Symptom: All ledger write operations blocked; transactions failing with query lock timeout. (Incident variation 24). Root cause: Migration script ran ALTER TABLE with default value on large table without pt-online-schema-change.. Fix applied: Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1024",
+      "retained_at": "2026-09-26T04:48:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1019",
+    "service_name": "payment-gateway",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-26T16:54:00+00:00",
+    "symptoms": "Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 19)",
+    "log_excerpt": "[2026-09-26T16:54:00+00:00] [payment-gateway] SSLHandshakeException: PKIX path validation failed: java.security.cert.CertificateExpiredException: NotAfter: Sun Sep 21 00:00:00 UTC 2026\nRemote peer terminated handshake",
+    "target_fix": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+    "resolution": {
+      "incident_id": "INC-1019",
+      "fix_applied": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-26T17:28:00+00:00",
+      "time_to_resolve_seconds": 2040
+    },
+    "postmortem": {
+      "incident_id": "INC-1019",
+      "narrative_summary": "Incident INC-1019 in payment-gateway. Symptom: Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 19). Root cause: Automated cert-manager renewal webhook secret expired without triggering alert.. Fix applied: Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1019",
+      "retained_at": "2026-09-26T17:28:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1020",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-26T23:07:00+00:00",
+    "symptoms": "Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 20)",
+    "log_excerpt": "[2026-09-26T23:07:00+00:00] [auth-service] InvalidTokenException: Key with kid 'auth-key-2026-b' not found in JWKS key set\nFailed to verify signature for inbound Bearer authorization token",
+    "target_fix": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+    "resolution": {
+      "incident_id": "INC-1020",
+      "fix_applied": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-26T23:44:00+00:00",
+      "time_to_resolve_seconds": 2220
+    },
+    "postmortem": {
+      "incident_id": "INC-1020",
+      "narrative_summary": "Incident INC-1020 in auth-service. Symptom: Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 20). Root cause: Canary deployment published new key ID before JWKS endpoint cache was purged across edge nodes.. Fix applied: Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1020",
+      "retained_at": "2026-09-26T23:44:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1017",
+    "service_name": "api-edge-router",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T02:28:00+00:00",
+    "symptoms": "Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 17)",
+    "log_excerpt": "[2026-09-27T02:28:00+00:00] [api-edge-router] nginx: [error] 14#14: *92102 payment-gateway.internal could not be resolved (3: Host not found)\nresolver 10.96.0.10:53 query timed out for cluster domain",
+    "target_fix": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+    "resolution": {
+      "incident_id": "INC-1017",
+      "fix_applied": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T02:56:00+00:00",
+      "time_to_resolve_seconds": 1680
+    },
+    "postmortem": {
+      "incident_id": "INC-1017",
+      "narrative_summary": "Incident INC-1017 in api-edge-router. Symptom: Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 17). Root cause: CoreDNS pods overwhelmed by single-concurrency UDP connection limits during traffic surge.. Fix applied: Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1017",
+      "retained_at": "2026-09-27T02:56:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1021",
+    "service_name": "user-profile-svc",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T06:20:00+00:00",
+    "symptoms": "User preferences failing to load; displaying fallback default values for all users. (Incident variation 21)",
+    "log_excerpt": "[2026-09-27T06:20:00+00:00] [user-profile-svc] CircuitBreaker 'UserProfileDB' is OPEN and does not permit further calls (failure rate 78.4% >= threshold 50%)\nFallback method getStaticProfile invoked",
+    "target_fix": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+    "resolution": {
+      "incident_id": "INC-1021",
+      "fix_applied": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T07:00:00+00:00",
+      "time_to_resolve_seconds": 2400
+    },
+    "postmortem": {
+      "incident_id": "INC-1021",
+      "narrative_summary": "Incident INC-1021 in user-profile-svc. Symptom: User preferences failing to load; displaying fallback default values for all users. (Incident variation 21). Root cause: Database transient network blip tripped circuit breaker; reset timeout was misconfigured to 24 hours.. Fix applied: Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1021",
+      "retained_at": "2026-09-27T07:00:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1018",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T09:41:00+00:00",
+    "symptoms": "Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 18)",
+    "log_excerpt": "[2026-09-27T09:41:00+00:00] [search-indexer] cluster_block_exception: index [catalog_v3] blocked by: [TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark 95%]",
+    "target_fix": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+    "resolution": {
+      "incident_id": "INC-1018",
+      "fix_applied": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T10:12:00+00:00",
+      "time_to_resolve_seconds": 1860
+    },
+    "postmortem": {
+      "incident_id": "INC-1018",
+      "narrative_summary": "Incident INC-1018 in search-indexer. Symptom: Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 18). Root cause: Debug level audit logs consuming root partition without logrotate compression.. Fix applied: Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1018",
+      "retained_at": "2026-09-27T10:12:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1015",
+    "service_name": "notification-worker",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T12:02:00+00:00",
+    "symptoms": "Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 15)",
+    "log_excerpt": "[2026-09-27T12:02:00+00:00] [notification-worker] CommitFailedException: Commit cannot be completed since the group has already rebalanced\nConsumer poll interval exceeded max.poll.interval.ms (300000ms)",
+    "target_fix": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+    "resolution": {
+      "incident_id": "INC-1015",
+      "fix_applied": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T13:09:00+00:00",
+      "time_to_resolve_seconds": 4020
+    },
+    "postmortem": {
+      "incident_id": "INC-1015",
+      "narrative_summary": "Incident INC-1015 in notification-worker. Symptom: Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 15). Root cause: Downstream SMTP provider throttled connections, causing message processing loop to block beyond poll interval.. Fix applied: Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1015",
+      "retained_at": "2026-09-27T13:09:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1012",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T15:23:00+00:00",
+    "symptoms": "All ledger write operations blocked; transactions failing with query lock timeout. (Incident variation 12)",
+    "log_excerpt": "[2026-09-27T15:23:00+00:00] [ledger-service] Lock wait timeout exceeded; try restarting transaction: ALTER TABLE accounts ADD COLUMN risk_tier VARCHAR(16) NOT NULL DEFAULT 'STANDARD'\nTable accounts locked exclusively by migration pid 4812",
+    "target_fix": "Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.",
+    "resolution": {
+      "incident_id": "INC-1012",
+      "fix_applied": "Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T16:21:00+00:00",
+      "time_to_resolve_seconds": 3480
+    },
+    "postmortem": {
+      "incident_id": "INC-1012",
+      "narrative_summary": "Incident INC-1012 in ledger-service. Symptom: All ledger write operations blocked; transactions failing with query lock timeout. (Incident variation 12). Root cause: Migration script ran ALTER TABLE with default value on large table without pt-online-schema-change.. Fix applied: Terminated blocking ALTER query, reverted migration, and executed non-blocking online schema update.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1012",
+      "retained_at": "2026-09-27T16:21:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1016",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T19:15:00+00:00",
+    "symptoms": "Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 16)",
+    "log_excerpt": "[2026-09-27T19:15:00+00:00] [ledger-service] java.lang.OutOfMemoryError: Java heap space\nDumping heap to java_pid1.hprof ...\nkubelet: Container ledger-service was killed by OOMKilled",
+    "target_fix": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+    "resolution": {
+      "incident_id": "INC-1016",
+      "fix_applied": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T19:40:00+00:00",
+      "time_to_resolve_seconds": 1500
+    },
+    "postmortem": {
+      "incident_id": "INC-1016",
+      "narrative_summary": "Incident INC-1016 in ledger-service. Symptom: Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 16). Root cause: Unbounded query loading 500,000 monthly transaction lines into memory for end-of-day audit.. Fix applied: Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1016",
+      "retained_at": "2026-09-27T19:40:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1013",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-27T22:36:00+00:00",
+    "symptoms": "HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 13)",
+    "log_excerpt": "[2026-09-27T22:36:00+00:00] [auth-service] TimeoutError: QueuePool limit of size 20 overflow 10 reached, connection timed out after 30.00 seconds\nSQLAlchemy.exc.TimeoutError: could not obtain connection from pool",
+    "target_fix": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+    "resolution": {
+      "incident_id": "INC-1013",
+      "fix_applied": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-27T23:37:00+00:00",
+      "time_to_resolve_seconds": 3660
+    },
+    "postmortem": {
+      "incident_id": "INC-1013",
+      "narrative_summary": "Incident INC-1013 in auth-service. Symptom: HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 13). Root cause: Database connection pool exhausted due to unclosed sessions in OAuth refresh handler.. Fix applied: Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1013",
+      "retained_at": "2026-09-27T23:37:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1014",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-28T05:49:00+00:00",
+    "symptoms": "Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 14)",
+    "log_excerpt": "[2026-09-28T05:49:00+00:00] [search-indexer] OOM command not allowed when used memory > 'maxmemory' (policy: volatile-lru)\nCache miss rate climbed from 4% to 92% across all search nodes",
+    "target_fix": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+    "resolution": {
+      "incident_id": "INC-1014",
+      "fix_applied": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-28T06:53:00+00:00",
+      "time_to_resolve_seconds": 3840
+    },
+    "postmortem": {
+      "incident_id": "INC-1014",
+      "narrative_summary": "Incident INC-1014 in search-indexer. Symptom: Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 14). Root cause: Key TTLs missing on product category search facets, triggering bulk LRU key evictions.. Fix applied: Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1014",
+      "retained_at": "2026-09-28T06:53:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1008",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-28T11:31:00+00:00",
+    "symptoms": "Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 8)",
+    "log_excerpt": "[2026-09-28T11:31:00+00:00] [auth-service] InvalidTokenException: Key with kid 'auth-key-2026-b' not found in JWKS key set\nFailed to verify signature for inbound Bearer authorization token",
+    "target_fix": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+    "resolution": {
+      "incident_id": "INC-1008",
+      "fix_applied": "Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-28T12:17:00+00:00",
+      "time_to_resolve_seconds": 2760
+    },
+    "postmortem": {
+      "incident_id": "INC-1008",
+      "narrative_summary": "Incident INC-1008 in auth-service. Symptom: Users suddenly logged out; valid session tokens rejected with HTTP 401 Unauthorized. (Incident variation 8). Root cause: Canary deployment published new key ID before JWKS endpoint cache was purged across edge nodes.. Fix applied: Flushed edge CDN cache for /.well-known/jwks.json and synchronized signing key rollover schedule.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1008",
+      "retained_at": "2026-09-28T12:17:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1009",
+    "service_name": "user-profile-svc",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-28T18:44:00+00:00",
+    "symptoms": "User preferences failing to load; displaying fallback default values for all users. (Incident variation 9)",
+    "log_excerpt": "[2026-09-28T18:44:00+00:00] [user-profile-svc] CircuitBreaker 'UserProfileDB' is OPEN and does not permit further calls (failure rate 78.4% >= threshold 50%)\nFallback method getStaticProfile invoked",
+    "target_fix": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+    "resolution": {
+      "incident_id": "INC-1009",
+      "fix_applied": "Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-28T19:33:00+00:00",
+      "time_to_resolve_seconds": 2940
+    },
+    "postmortem": {
+      "incident_id": "INC-1009",
+      "narrative_summary": "Incident INC-1009 in user-profile-svc. Symptom: User preferences failing to load; displaying fallback default values for all users. (Incident variation 9). Root cause: Database transient network blip tripped circuit breaker; reset timeout was misconfigured to 24 hours.. Fix applied: Reduced circuit breaker sleepWindowInMilliseconds from 86400000 to 15000 and manually reset breaker state.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1009",
+      "retained_at": "2026-09-28T19:33:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1010",
+    "service_name": "inventory-manager",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T01:57:00+00:00",
+    "symptoms": "Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 10)",
+    "log_excerpt": "[2026-09-29T01:57:00+00:00] [inventory-manager] RejectedExecutionException: Task java.util.concurrent.FutureTask@381af rejected from ThreadPoolExecutor [Running, pool size 64, active threads 64, queued tasks 500]",
+    "target_fix": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+    "resolution": {
+      "incident_id": "INC-1010",
+      "fix_applied": "Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T02:49:00+00:00",
+      "time_to_resolve_seconds": 3120
+    },
+    "postmortem": {
+      "incident_id": "INC-1010",
+      "narrative_summary": "Incident INC-1010 in inventory-manager. Symptom: Inventory reservation API latency jumped from 25ms to 8500ms; thread pool rejects incoming tasks. (Incident variation 10). Root cause: Synchronous HTTP call to legacy ERP supplier API had no read timeout configured, holding worker threads indefinitely.. Fix applied: Added strict 1500ms HTTP timeout and configured circuit breaker around legacy ERP gateway.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1010",
+      "retained_at": "2026-09-29T02:49:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1007",
+    "service_name": "payment-gateway",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T04:18:00+00:00",
+    "symptoms": "Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 7)",
+    "log_excerpt": "[2026-09-29T04:18:00+00:00] [payment-gateway] SSLHandshakeException: PKIX path validation failed: java.security.cert.CertificateExpiredException: NotAfter: Sun Sep 21 00:00:00 UTC 2026\nRemote peer terminated handshake",
+    "target_fix": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+    "resolution": {
+      "incident_id": "INC-1007",
+      "fix_applied": "Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T05:01:00+00:00",
+      "time_to_resolve_seconds": 2580
+    },
+    "postmortem": {
+      "incident_id": "INC-1007",
+      "narrative_summary": "Incident INC-1007 in payment-gateway. Symptom: Payment processing completely down; credit card tokenization requests failing with SSL handshake error. (Incident variation 7). Root cause: Automated cert-manager renewal webhook secret expired without triggering alert.. Fix applied: Manually rotated payment provider mTLS certificates and updated cert-manager Prometheus alert rule.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1007",
+      "retained_at": "2026-09-29T05:01:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1011",
+    "service_name": "recommendation-engine",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T08:10:00+00:00",
+    "symptoms": "Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 11)",
+    "log_excerpt": "[2026-09-29T08:10:00+00:00] [recommendation-engine] HTTP 429 Too Many Requests from VectorDB endpoint /v1/embeddings/query\nRetry-After: 60s header received. Dropping batch request.",
+    "target_fix": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+    "resolution": {
+      "incident_id": "INC-1011",
+      "fix_applied": "Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T09:05:00+00:00",
+      "time_to_resolve_seconds": 3300
+    },
+    "postmortem": {
+      "incident_id": "INC-1011",
+      "narrative_summary": "Incident INC-1011 in recommendation-engine. Symptom: Personalized product recommendations absent on homepage; fallback popular products shown. (Incident variation 11). Root cause: Batch recommendation recalculation job burst exceeded external embedding provider rate limit.. Fix applied: Implemented client-side token bucket rate limiter and distributed recalculation across 6 hour window.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1011",
+      "retained_at": "2026-09-29T09:05:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1001",
+    "service_name": "auth-service",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T10:00:00+00:00",
+    "symptoms": "HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 1)",
+    "log_excerpt": "[2026-09-29T10:00:00+00:00] [auth-service] TimeoutError: QueuePool limit of size 20 overflow 10 reached, connection timed out after 30.00 seconds\nSQLAlchemy.exc.TimeoutError: could not obtain connection from pool",
+    "target_fix": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+    "resolution": {
+      "incident_id": "INC-1001",
+      "fix_applied": "Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T10:25:00+00:00",
+      "time_to_resolve_seconds": 1500
+    },
+    "postmortem": {
+      "incident_id": "INC-1001",
+      "narrative_summary": "Incident INC-1001 in auth-service. Symptom: HTTP 500 errors and elevated latency on user token validation endpoints. (Incident variation 1). Root cause: Database connection pool exhausted due to unclosed sessions in OAuth refresh handler.. Fix applied: Wrapped session lifecycle in context manager and increased pool size to 50 with 10s idle recycle.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1001",
+      "retained_at": "2026-09-29T10:25:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-DEMO-A",
+    "service_name": "order-fulfillment",
+    "severity": "SEV1",
+    "status": "OPEN",
+    "created_at": "2026-09-29T12:00:00+00:00",
+    "symptoms": "Silent drop of checkout confirmation events; orders stuck in pending-payment state without error dispatch.",
+    "log_excerpt": "2026-09-29T12:14:02.104Z [ERROR] [order-fulfillment] redis_pipe: buffer watermark exceeded (98.4MB > 64MB limit)\n2026-09-29T12:14:02.105Z [WARN] [order-fulfillment] dispatch_event: connection drained, dropping payload batch [order_id: ord_91823]\n2026-09-29T12:14:03.412Z [ERROR] [order-fulfillment] pipeline backpressure: TCP send queue choked, ACK timed out after 5000ms",
+    "target_fix": "Increase Redis client command buffer from 64MB to 256MB and enable auto-flushing on pipeline backpressure threshold.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": "Incident A (Novel Incident)"
+  },
+  {
+    "incident_id": "INC-1005",
+    "service_name": "api-edge-router",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T14:52:00+00:00",
+    "symptoms": "Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 5)",
+    "log_excerpt": "[2026-09-29T14:52:00+00:00] [api-edge-router] nginx: [error] 14#14: *92102 payment-gateway.internal could not be resolved (3: Host not found)\nresolver 10.96.0.10:53 query timed out for cluster domain",
+    "target_fix": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+    "resolution": {
+      "incident_id": "INC-1005",
+      "fix_applied": "Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T15:29:00+00:00",
+      "time_to_resolve_seconds": 2220
+    },
+    "postmortem": {
+      "incident_id": "INC-1005",
+      "narrative_summary": "Incident INC-1005 in api-edge-router. Symptom: Upstream microservices reporting 502 Bad Gateway across all external traffic. (Incident variation 5). Root cause: CoreDNS pods overwhelmed by single-concurrency UDP connection limits during traffic surge.. Fix applied: Deployed NodeLocal DNSCache daemonset and enabled TCP fallback for cluster internal DNS queries.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1005",
+      "retained_at": "2026-09-29T15:29:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-DEMO-B",
+    "service_name": "order-fulfillment",
+    "severity": "SEV1",
+    "status": "OPEN",
+    "created_at": "2026-09-29T16:00:00+00:00",
+    "symptoms": "Purchases hanging on confirmation step; queue processing stalling with pipeline write timeouts.",
+    "log_excerpt": "2026-09-29T16:22:11.881Z [WARN] [order-fulfillment] async_stream: TCP buffer full while flushing batch pipeline\n2026-09-29T16:22:12.002Z [ERROR] [order-fulfillment] ClientBufferExceededException: downstream redis pipeline writer unable to append command\n2026-09-29T16:22:13.119Z [ERROR] [order-fulfillment] order_state_machine: transaction ord_99214 transitioned to UNCONFIRMED due to unhandled pipeline stall",
+    "target_fix": "Increase Redis client command buffer from 64MB to 256MB and enable auto-flushing on pipeline backpressure threshold.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": "Incident B (Repeat of A with different wording)"
+  },
+  {
+    "incident_id": "INC-1002",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T17:13:00+00:00",
+    "symptoms": "Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 2)",
+    "log_excerpt": "[2026-09-29T17:13:00+00:00] [search-indexer] OOM command not allowed when used memory > 'maxmemory' (policy: volatile-lru)\nCache miss rate climbed from 4% to 92% across all search nodes",
+    "target_fix": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+    "resolution": {
+      "incident_id": "INC-1002",
+      "fix_applied": "Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T17:41:00+00:00",
+      "time_to_resolve_seconds": 1680
+    },
+    "postmortem": {
+      "incident_id": "INC-1002",
+      "narrative_summary": "Incident INC-1002 in search-indexer. Symptom: Search index queries failing with cache misses and latency spiking by 400%. (Incident variation 2). Root cause: Key TTLs missing on product category search facets, triggering bulk LRU key evictions.. Fix applied: Applied explicit 3600s TTL to facet caches and increased Redis maxmemory reservation.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1002",
+      "retained_at": "2026-09-29T17:41:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-DEMO-C",
+    "service_name": "order-fulfillment",
+    "severity": "SEV2",
+    "status": "OPEN",
+    "created_at": "2026-09-29T18:00:00+00:00",
+    "symptoms": "Order fulfillment timeouts and failing order confirmations under concurrent checkout peak.",
+    "log_excerpt": "2026-09-29T18:05:40.312Z [ERROR] [order-fulfillment] org.postgresql.util.PSQLException: ERROR: deadlock detected\n2026-09-29T18:05:40.313Z [DETAIL] Process 29188 waits for ShareLock on transaction 849201; blocked by process 29195.\n2026-09-29T18:05:40.314Z [HINT] See server log for query details. Statement: UPDATE inventory_items SET reserved_qty = reserved_qty + 1 WHERE sku = $1",
+    "target_fix": "Enforce consistent SKU lock acquisition ordering (alphabetical by SKU) before updating inventory rows to prevent cyclic deadlocks.",
+    "resolution": null,
+    "postmortem": null,
+    "is_demo_arc": "Incident C (Superficially resembles A/B, but distinct root cause)"
+  },
+  {
+    "incident_id": "INC-1006",
+    "service_name": "search-indexer",
+    "severity": "SEV2",
+    "status": "RESOLVED",
+    "created_at": "2026-09-29T21:05:00+00:00",
+    "symptoms": "Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 6)",
+    "log_excerpt": "[2026-09-29T21:05:00+00:00] [search-indexer] cluster_block_exception: index [catalog_v3] blocked by: [TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark 95%]",
+    "target_fix": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+    "resolution": {
+      "incident_id": "INC-1006",
+      "fix_applied": "Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-29T21:45:00+00:00",
+      "time_to_resolve_seconds": 2400
+    },
+    "postmortem": {
+      "incident_id": "INC-1006",
+      "narrative_summary": "Incident INC-1006 in search-indexer. Symptom: Elasticsearch indices marked read-only; documents cannot be indexed. (Incident variation 6). Root cause: Debug level audit logs consuming root partition without logrotate compression.. Fix applied: Purged archived audit logs, configured 7-day log rotation, and expanded persistent volume by 200GB.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1006",
+      "retained_at": "2026-09-29T21:45:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1003",
+    "service_name": "notification-worker",
+    "severity": "SEV3",
+    "status": "RESOLVED",
+    "created_at": "2026-09-30T00:26:00+00:00",
+    "symptoms": "Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 3)",
+    "log_excerpt": "[2026-09-30T00:26:00+00:00] [notification-worker] CommitFailedException: Commit cannot be completed since the group has already rebalanced\nConsumer poll interval exceeded max.poll.interval.ms (300000ms)",
+    "target_fix": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+    "resolution": {
+      "incident_id": "INC-1003",
+      "fix_applied": "Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-30T00:57:00+00:00",
+      "time_to_resolve_seconds": 1860
+    },
+    "postmortem": {
+      "incident_id": "INC-1003",
+      "narrative_summary": "Incident INC-1003 in notification-worker. Symptom: Email notifications delayed by over 45 minutes; user password resets delayed. (Incident variation 3). Root cause: Downstream SMTP provider throttled connections, causing message processing loop to block beyond poll interval.. Fix applied: Offloaded email dispatch to asynchronous threadpool and decoupled Kafka message ack from SMTP delivery.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1003",
+      "retained_at": "2026-09-30T00:57:00+00:00"
+    },
+    "is_demo_arc": null
+  },
+  {
+    "incident_id": "INC-1004",
+    "service_name": "ledger-service",
+    "severity": "SEV1",
+    "status": "RESOLVED",
+    "created_at": "2026-09-30T07:39:00+00:00",
+    "symptoms": "Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 4)",
+    "log_excerpt": "[2026-09-30T07:39:00+00:00] [ledger-service] java.lang.OutOfMemoryError: Java heap space\nDumping heap to java_pid1.hprof ...\nkubelet: Container ledger-service was killed by OOMKilled",
+    "target_fix": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+    "resolution": {
+      "incident_id": "INC-1004",
+      "fix_applied": "Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.",
+      "outcome": "RESOLVED",
+      "resolved_at": "2026-09-30T08:13:00+00:00",
+      "time_to_resolve_seconds": 2040
+    },
+    "postmortem": {
+      "incident_id": "INC-1004",
+      "narrative_summary": "Incident INC-1004 in ledger-service. Symptom: Ledger service pod crash-looping with ExitCode 137; accounting reconciliations failed. (Incident variation 4). Root cause: Unbounded query loading 500,000 monthly transaction lines into memory for end-of-day audit.. Fix applied: Refactored transaction reconciliation into cursor-based streaming batch iterator of 1000 items.. Outcome: RESOLVED.",
+      "retained_memory_id": "OP-HIST-INC-1004",
+      "retained_at": "2026-09-30T08:13:00+00:00"
+    },
+    "is_demo_arc": null
+  }
+]
